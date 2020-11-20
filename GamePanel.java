@@ -1,5 +1,3 @@
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.event.ActionListener;
@@ -9,7 +7,6 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.util.Random;
 import javax.swing.Timer;
-
 import javax.swing.JPanel;
 //method 2
 /**
@@ -61,8 +58,23 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void draw(Graphics g) {
         for(int i = 2;i < SCREEN_HEIGHT/UNIT_SIZE;i++){
+            //draw the grid
             g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);//x
             g.drawLine(0, i*UNIT_SIZE, SCREEN_WINDTH, i*UNIT_SIZE);//y
+        }
+        //apple
+        g.setColor(Color.RED);
+        g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
+        //draw the snake
+        for(int i =0;i < bodyPart;i++){
+            if(i == 0){
+                g.setColor(Color.GREEN);
+                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            }
+            else{
+                g.setColor(new Color(45,180,0));
+                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            }
         }
     }
 
@@ -71,7 +83,24 @@ public class GamePanel extends JPanel implements ActionListener {
         appleY = random.nextInt((int)(SCREEN_WINDTH/UNIT_SIZE))*UNIT_SIZE;
     }
     public void move() {
-        
+        for(int i = bodyPart;i > 0;i--){
+            x[i] = x[i] - 1;
+            y[i] = y[i] - 1;
+        }
+        switch(direction){
+            case 'U':
+                 y[0] = y[0] - UNIT_SIZE;
+                 break;
+            case 'D':
+                 y[0] = y[0] + UNIT_SIZE;
+                 break;
+            case 'R':
+                 x[0] = x[0] + UNIT_SIZE;
+                 break;
+            case 'L':
+                 x[0] = x[0] - UNIT_SIZE;
+                 break;
+        }
     }
 
     public void checkApple() {
@@ -88,7 +117,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
+       if(running){
+           move();
+           checkApple();
+           checkCollisions();
+       }
+       repaint();
 
     }
     public class MyKeyAdapter extends KeyAdapter{

@@ -4,6 +4,6 @@ public class Snake{
         //shrotcut
         new GameFrame(){
             
-        }
+        };
     }
 }
