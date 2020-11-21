@@ -26,7 +26,7 @@ public class GamePanel extends JPanel implements ActionListener {
     final int x[] = new int[GAME_SIZE];
     final int y[] = new int[GAME_SIZE];
     // initial body part
-    int bodyPart = 3;
+    int bodyPart = 6;
     int appleEaten;
     int appleX;
     int appleY;
@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements ActionListener {
     GamePanel() {
         random = new Random();
         this.setPreferredSize(new Dimension(SCREEN_WINDTH,SCREEN_HEIGHT));
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.black);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
         startGame();
@@ -57,18 +57,19 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-        for(int i = 2;i < SCREEN_HEIGHT/UNIT_SIZE;i++){
+        //draw the grid
+        for(int i = 0;i < SCREEN_HEIGHT/UNIT_SIZE;i++){
             //draw the grid
             g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);//x
             g.drawLine(0, i*UNIT_SIZE, SCREEN_WINDTH, i*UNIT_SIZE);//y
         }
         //apple
-        g.setColor(Color.RED);
+        g.setColor(Color.red);
         g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
         //draw the snake
         for(int i =0;i < bodyPart;i++){
             if(i == 0){
-                g.setColor(Color.GREEN);
+                g.setColor(Color.green);
                 g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
             }
             else{
@@ -104,11 +105,41 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void checkApple() {
-
+        if((x[0] == appleX)&&(y[0] == appleY)){
+            bodyPart++;
+            appleEaten++;
+            NewApple();
+        }
     }
 
     public void checkCollisions() {
-
+        //check if the head collides with body
+        for(int i = bodyPart;i > 0;i--){
+            if((x[0] == x[i]) && (y[0] == y[i])){
+                running = false;
+            }
+            //check if head touched left border
+            if(x[0] < 0){
+                running = false;
+            }
+            //check if head touched right border
+            if(x[0] > SCREEN_WINDTH){
+                running = false;
+            }
+            //check if head touched top border
+            if(y[0] < 0){
+                running = false;
+            }
+            //check if head touched botton border
+            if(y[0] > SCREEN_HEIGHT){
+                running = false;
+            }
+            //Stop the Timer
+            if(!running){
+                timer.stop();
+            }
+            
+        }
     }
 
     public void gameOver(Graphics g) {
@@ -123,12 +154,37 @@ public class GamePanel extends JPanel implements ActionListener {
            checkCollisions();
        }
        repaint();
-
     }
+    //Control the snake
     public class MyKeyAdapter extends KeyAdapter{
         @Override
-        public void keyPressed(KeyEvent k) {
-            
+        public void keyPressed(KeyEvent e) {
+            switch(e.getKeyCode()){
+                case KeyEvent.VK_LEFT:
+                //limit the degree of direction
+                if((direction != 'R')){
+                    direction = 'L';
+                }
+                break;
+                case KeyEvent.VK_RIGHT:
+                //limit the degree of direction
+                if((direction != 'L')){
+                    direction = 'R';
+                }
+                break;
+                case KeyEvent.VK_UP:
+                //limit the degree of direction
+                if((direction != 'D')){
+                    direction = 'U';
+                }
+                break;
+                case KeyEvent.VK_DOWN:
+                //limit the degree of direction
+                if((direction != 'U')){
+                    direction = 'D';
+                }
+                break;
+            }
         }
     }
 }
